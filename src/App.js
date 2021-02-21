@@ -7,7 +7,7 @@ import {Homepage} from './pages/homepage/homepage.component';
 import ShopPage from './pages/shop/shop.component.jsx';
 import SignInAndSignUpPage from './pages/sign-in-sign-out/sign-in-and-sign-up.component';
 import Header from './components/header/header.component';
-import { auth } from './firebase/firebase.utils';
+import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 
 
 function App() {
@@ -16,13 +16,25 @@ function App() {
   });
 
   useEffect(() => {
-    const unSubscribeFromAuth = auth.onAuthStateChanged(user => {
-      setAppState({currentUser: user});
+    const unSubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot(snapShot => {
+          setAppState({
+            currentUser: {
+              id: snapShot.id,
+              ...snapShot.data()
+            }
+          });
+        });
+      } else {
+        setAppState({
+          currentUser: userAuth
+        });
+      }
     });
-    return () => {
-      unSubscribeFromAuth();
-    };
-  });
+    return () => unSubscribeFromAuth();
+  }, []);
 
   return (
     <div>

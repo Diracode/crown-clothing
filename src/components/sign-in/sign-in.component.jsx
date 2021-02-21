@@ -17,7 +17,7 @@ const SignIn = () => {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setSignInForm({ [name]: value });
+    setSignInForm({ ...signInForm, [name]: value });
   };
 
   return (
