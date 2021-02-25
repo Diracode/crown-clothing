@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { auth } from '../../firebase/firebase.utils';
+import { connect } from 'react-redux';
 
 import { GiQueenCrown } from 'react-icons/gi';
 
@@ -29,4 +30,9 @@ const Header = ({currentUser}) => {
     )
 };
 
-export default Header;
+const mapStateToProps = (state) => ({
+    //state here is the top level rootReducer
+    currentUser: state.user.currentUser
+});
+
+export default connect(mapStateToProps)(Header);

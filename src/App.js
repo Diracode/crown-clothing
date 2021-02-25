@@ -1,5 +1,6 @@
-import React, { useState, useEffect }  from 'react';
+import React, { useEffect }  from 'react';
 import { Route, Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import './App.css';
 
@@ -8,37 +9,34 @@ import ShopPage from './pages/shop/shop.component.jsx';
 import SignInAndSignUpPage from './pages/sign-in-sign-out/sign-in-and-sign-up.component';
 import Header from './components/header/header.component';
 import { auth, createUserProfileDocument } from './firebase/firebase.utils';
+import { setCurrentUser } from './redux/user/user.action';
 
 
-function App() {
-  const [appState, setAppState] = useState({
-    currentUser: null
-  });
+
+function App(props) {
+  const { setCurrentUser } = props;
 
   useEffect(() => {
     const unSubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
         userRef.onSnapshot(snapShot => {
-          setAppState({
-            currentUser: {
+          setCurrentUser({
               id: snapShot.id,
               ...snapShot.data()
-            }
+            })
           });
-        });
       } else {
-        setAppState({
-          currentUser: userAuth
-        });
+        setCurrentUser(userAuth);
       }
     });
     return () => unSubscribeFromAuth();
-  }, []);
+    //why does [] and [setCurrentUser] work?????????
+  }, [setCurrentUser]);
 
   return (
     <div>
-    <Header currentUser={appState.currentUser}/>
+    <Header />
     <Switch>
       <Route exact path='/' component={Homepage}/>
       <Route exact path='/shop' component={ShopPage}/>
@@ -46,6 +44,10 @@ function App() {
     </Switch>
     </div>
   );
-}
+};
 
-export default App;
+const mapDispatchToProps = dispatch => ({
+  setCurrentUser: user => dispatch(setCurrentUser(user))
+});
+
+export default connect(null, mapDispatchToProps)(App);
