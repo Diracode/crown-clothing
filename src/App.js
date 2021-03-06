@@ -11,11 +11,13 @@ import ShopPage from "./pages/shop/shop.component.jsx";
 import SignInAndSignUpPage from "./pages/sign-in-sign-out/sign-in-and-sign-up.component";
 import CheckoutPage from './pages/checkout/checkout.component';
 import Header from "./components/header/header.component";
-import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
+import { auth, createUserProfileDocument, addCollectionAndDocuments } from "./firebase/firebase.utils";
 import { setCurrentUser } from "./redux/user/user.action";
+import { selectCollectionForPreview } from './redux/shop/shop.selectors';
+
 
 function App(props) {
-  const { setCurrentUser, currentUser } = props;
+  const { setCurrentUser, currentUser, collectionsArray } = props;
 
   useEffect(() => {
     const unSubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
@@ -29,13 +31,15 @@ function App(props) {
         });
       } else {
         setCurrentUser(userAuth);
+        addCollectionAndDocuments('collections', collectionsArray.map(({title, items}) => ({title, items})));
       }
     });
     return () => unSubscribeFromAuth();
     //why does [] and [setCurrentUser] work?????????
-  }, [setCurrentUser]);
+  }, [setCurrentUser, collectionsArray]);
 
   return (
+
     <div>
       <Header />
       <Switch>
@@ -55,7 +59,8 @@ function App(props) {
 }
 
 const mapStateToProps = createStructuredSelector({
-  currentUser: selectCurrentUser
+  currentUser: selectCurrentUser,
+  collectionsArray: selectCollectionForPreview
 });
 
 const mapDispatchToProps = (dispatch) => ({

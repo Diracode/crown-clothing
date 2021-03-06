@@ -38,6 +38,30 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
 
 firebase.initializeApp(config);
 
+export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+  const collectionRef = firestore.collection(collectionKey);
+
+  /** 
+   * since we are making individual calls to add data to our firestore database
+   * it is efficient to group the calls in one big batch so that whenever there is
+   * an interruption in adding data to database (e.g failed internet connection),
+   * the data that has already been added will fail and the database will
+   * return back to the state it was b4 the said data started adding.
+  */
+
+  const batch = firestore.batch();
+  objectsToAdd.forEach(obj => {
+    const newDocRef = collectionRef.doc();
+    batch.set(newDocRef, obj);
+  });
+  /** 
+   * batch.commit() to fire-off our batch requests
+   * it returns a promise
+   * when commit succeeds it will come back and resolve a void value(null value)
+  */
+  return await batch.commit();
+};
+
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
 
