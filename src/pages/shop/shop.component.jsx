@@ -1,31 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { updateCollections } from '../../redux/shop/shop.actions';
+import { fetchCollectionsStartAsync } from '../../redux/shop/shop.actions';
 
-import WithSpinner from '../../components/with-spinner/with-spinner.component';
+import CollectionsOverviewContainer from '../../components/collections-overview/collection-overview.container.component';
+import CollectionPageContainer from '../collection/collection.container.component';
 
-import CollectionsOverview from '../../components/collections-overview/collections-overview.component';
-import CollectionPage from '../collection/collection.component';
 
-import { firestore, convertCollectionsSnapshotToMap } from '../../firebase/firebase.utils';
-
-const CollectionsOverviewWithSpinner = WithSpinner(CollectionsOverview);
-const CollectionPageWithSpinner = WithSpinner(CollectionPage);
-
-const ShopPage = (props) => {
-    const [loadingState, setLoadingState] = useState(true);
-    const {match, updateCollections } = props;
+const ShopPage = props => {
+    const {match, fetchCollectionsStartAsync} = props;
 
     useEffect(() => {
-        const collectionRef = firestore.collection('collections');
-        const unsubscribeFromSnapshot = collectionRef.onSnapshot(async snapshot =>{
-           const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
-           updateCollections(collectionsMap);
-           setLoadingState(false);
-        });
-    });
+        fetchCollectionsStartAsync();
+    }, [fetchCollectionsStartAsync]);
 
     return (
         /**
@@ -34,13 +22,16 @@ const ShopPage = (props) => {
          * receive
          */
         <div className='shop-page'>
-            <Route exact path={`${match.path}`} render={(props) => <CollectionsOverviewWithSpinner isLoading={loadingState} {...props}/>}/>
-            <Route path={`${match.path}/:collectionId`} render={(props) => <CollectionPageWithSpinner isLoading={loadingState} {...props}/>}/>
+            {/* <Route exact path={`${match.path}`} render={(props) => <CollectionsOverviewWithSpinner isLoading={isCollectionFetching} {...props}/>}/>
+            <Route path={`${match.path}/:collectionId`} render={(props) => <CollectionPageWithSpinner isLoading={!isCollectionsLoaded} {...props}/>}/> */}
+            <Route exact path={`${match.path}`} component={CollectionsOverviewContainer}/>
+            <Route path={`${match.path}/:collectionId`} component={CollectionPageContainer}/>
         </div>
+        //<CollectionPageWithSpinner isLoading={!isCollectionsLoaded}: !isCollectionsLoaded is so in order to always set to true since collections will be null upon initial render of the page b4 d useEffect hook is called
     )};
 
 const mapDispatchToProps = dispatch => ({
-    updateCollections: collectionsMap => dispatch(updateCollections(collectionsMap))
+    fetchCollectionsStartAsync: () => dispatch(fetchCollectionsStartAsync())
 });
 
 export default connect(null, mapDispatchToProps)(ShopPage);
