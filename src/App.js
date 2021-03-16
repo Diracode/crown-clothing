@@ -12,27 +12,27 @@ import SignInAndSignUpPage from "./pages/sign-in-sign-out/sign-in-and-sign-up.co
 import CheckoutPage from './pages/checkout/checkout.component';
 import Header from "./components/header/header.component";
 import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
-import { setCurrentUser } from "./redux/user/user.action";
+import { setCurrentUser } from "./redux/user/user.actions";
 
 
 function App(props) {
   const { setCurrentUser, currentUser } = props;
 
   useEffect(() => {
-    const unSubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-      if (userAuth) {
-        const userRef = await createUserProfileDocument(userAuth);
-        userRef.onSnapshot((snapShot) => {
-          setCurrentUser({
-            id: snapShot.id,
-            ...snapShot.data(),
-          });
-        });
-      } else {
-        setCurrentUser(userAuth);
-      }
-    });
-    return () => unSubscribeFromAuth();
+    // const unSubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+    //   if (userAuth) {
+    //     const userRef = await createUserProfileDocument(userAuth);
+    //     userRef.onSnapshot((snapShot) => {
+    //       setCurrentUser({
+    //         id: snapShot.id,
+    //         ...snapShot.data(),
+    //       });
+    //     });
+    //   } else {
+    //     setCurrentUser(userAuth);
+    //   }
+    // });
+    // return () => unSubscribeFromAuth();
     //why does [] and [setCurrentUser] work?????????
   }, [setCurrentUser]);
 
