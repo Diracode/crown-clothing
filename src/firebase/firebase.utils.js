@@ -89,7 +89,7 @@ export const getCurrentUser = () => {
       unsubscribe();
       resolve(userAuth);
     }, reject)
-  })
+  });
 }
 
 export const auth = firebase.auth();
