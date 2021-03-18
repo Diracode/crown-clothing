@@ -14,15 +14,13 @@ import CheckoutPage from './pages/checkout/checkout.component';
 import Header from "./components/header/header.component";
 
 
-function App(props) {
-  const { currentUser, checkUserSession } = props;
+function App({ currentUser, checkUserSession }) {
 
   useEffect(() => {
     checkUserSession();
   }, [checkUserSession]);
 
   return (
-
     <div>
       <Header />
       <Switch>

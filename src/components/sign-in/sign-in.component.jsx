@@ -9,9 +9,11 @@ import { googleSignInStart, emailSignInStart } from '../../redux/user/user.actio
 
 import "./sign-in.styles.scss";
 
-const SignIn = props => {
-  const {googleSignInStart, emailSignInStart} = props;
-  const [signInForm, setSignInForm] = useState({ email: "", password: "" });
+const SignIn = ({googleSignInStart, emailSignInStart}) => {
+  const [signInForm, setSignInForm] = useState({
+    email: "",
+    password: ""
+  });
   const { email, password } = signInForm;
 
   const handleSubmit = async (event) => {

@@ -8,9 +8,7 @@ import CollectionsOverviewContainer from '../../components/collections-overview/
 import CollectionPageContainer from '../collection/collection.container.component';
 
 
-const ShopPage = props => {
-    const {match, fetchCollectionsStart} = props;
-
+const ShopPage = ({match, fetchCollectionsStart}) => {
     useEffect(() => {
         fetchCollectionsStart();
     }, [fetchCollectionsStart]);
